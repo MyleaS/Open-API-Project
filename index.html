@@ -3,12 +3,130 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Coffee Menu</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <script src="index.js"></script>
+    <header>
+      <!-- Name of Coffee Shop-->
+      <h1>COFFEE SPICE</h1>
+      <p>Your favorite coffee shop!</p>
+ 
+      <!-- Links for Coffee-->    
+    <nav>
+      <h2>Menu</h2>
+      <button id="hotLink" type="button">Hot Coffee</button>
+      <button id="icedLink" type="button">Iced Coffee</button>
+
+    </nav>
+
+   <!-- Coffee Image-->
+    <img src="Coffee.jpeg" alt="Coffee Image" class="coffee-image" />
+    <div id="coffeeContainer">
+    </div>
+
+
+
+
+    <h3>Add Your Favorite Coffee Preference</h3>
+    <form id="coffeeForm">
+      <input type="text" id="userName" placeholder="Your name" required />
+      <input type="text" id="favCoffee" placeholder="Favorite coffee" required />
+      <button type="submit">Add</button>
+    </form>
+    
+    <ul id="userList"></ul>
+
+
+    <script>
+ // Get references to elements by their IDs
+      const coffeeContainer = document.getElementById("coffeeContainer");
+      const hotLink = document.getElementById("hotLink");
+      const icedLink = document.getElementById("icedLink");
+ // Function to fetch coffee data from the API
+      async function fetchCoffeeData(url) {
+        coffeeContainer.innerHTML = "<p>Loading...</p>";
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+          displayCoffee(data);
+        } catch (error) {
+          coffeeContainer.innerHTML = "<p>Error loading coffee data.</p>";
+          console.error("Fetch error:", error);
+        }
+      }
+// Function to display coffee items in the container
+      function displayCoffee(data) {
+        coffeeContainer.innerHTML = "";
+// Loop through each coffee item from the API
+        data.forEach((coffee) => {
+          const div = document.createElement("div");
+          div.className = "coffee-item";
+    // Add HTML content: title and description
+          div.innerHTML = `
+          <h3>${coffee.title}</h3>
+          <p>${coffee.description || "No description available."}</p>
+        `;
+          coffeeContainer.appendChild(div);
+        });
+      }
+ // Event listener for Hot Coffee link - fetch hot coffee data
+      hotLink.addEventListener("click", () => {
+        fetchCoffeeData("https://api.sampleapis.com/coffee/hot");
+      });
+  // Event listener for Iced Coffee link - fetch iced coffee data
+      icedLink.addEventListener("click", () => {
+        fetchCoffeeData("https://api.sampleapis.com/coffee/iced");
+      });
+
+  // Get references to the form and the list where user entries will be shown
+      const form = document.getElementById('coffeeForm');
+const userList = document.getElementById('userList');
+
+
+  // When the form is submitted
+form.addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const name = document.getElementById('userName').value;
+  const coffee = document.getElementById('favCoffee').value;
+  // Create a new list item to show the entry
+  const li = document.createElement('li');
+  li.innerHTML = `
+    <strong>${name}</strong>: ${coffee}
+    <button onclick="editEntry(this)">Edit</button>
+    <button onclick="deleteEntry(this)">Delete</button>
+  `;
+   // Add the new item to the user list
+  userList.appendChild(li);
+  form.reset();
+});
+
+// Functions to handle edit and delete actions
+function editEntry(button) {
+  const li = button.parentElement;
+  const [namePart, coffeePart] = li.innerText.split(':');
+  const name = namePart.trim();
+  const coffee = coffeePart.split('Edit')[0].trim();
+
+  document.getElementById('userName').value = name;
+  document.getElementById('favCoffee').value = coffee;
+
+  li.remove(); // Remove old entry; user will resubmit updated info
+}
+
+function deleteEntry(button) {
+  button.parentElement.remove();
+}
 
     </script>
+
+
+   <!-- Copyright Information-->
+   <footer>
+    <p>&copy; 2023 Coffee Spice. All rights reserved.</p>
+  </footer>
+  
   </body>
-</html>
+  </html>
+    
